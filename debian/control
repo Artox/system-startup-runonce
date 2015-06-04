@@ -1,0 +1,15 @@
+Source: runonce
+Section: unknown
+Priority: optional
+Maintainer: Josua Mayer <privacy@not.given>
+Build-Depends: debhelper (>= 9), dh-exec, dh-systemd
+Standards-Version: 3.9.5
+Homepage: https://github.com/Artox/system-startup-runonce
+
+Package: runonce
+Architecture: all
+Depends: ${misc:Depends}
+Description: run scripts and applications on (next boot), once
+ This package provides a system service that is responsible for
+ executing scripts or applications exactly once on the next boot.
+ After successful execution, it will not be run again.

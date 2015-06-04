@@ -1,0 +1,3 @@
+#! /usr/bin/dh-exec
+
+runonce-helper.sh => /usr/sbin/runonce-helper

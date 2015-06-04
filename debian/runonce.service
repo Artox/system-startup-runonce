@@ -1,0 +1,11 @@
+[Unit]
+Description=Execute Run-Once Apps
+After=local-fs.target remote-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/runonce-helper run
+
+[Install]
+WantedBy=multi-user.target
