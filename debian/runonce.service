@@ -8,4 +8,4 @@ RemainAfterExit=yes
 ExecStart=/usr/sbin/runonce-helper run
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=single-user.target multi-user.target

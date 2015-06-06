@@ -1,15 +1,15 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 usage() {
-	echo "Usage: $0 <command> [<options>]"
-	echo
-	echo "Commands:"
-	echo "\tadd <name> <exec> [<args>]"
-	echo "\t\tschedule <exec> for execution on startup"
-	echo "\tremove <name>"
-	echo "\t\tremove scheduled job with name <name>"
-	echo "\trun"
-	echo "\t\texecute all scripts and applications (to be used by service only)"
+	printf "Usage: %s <command> [<options>]" "$0"
+	printf "\n"
+	printf "Commands:"
+	printf "\tadd <name> <exec> [<args>]"
+	printf "\t\tschedule <exec> for execution on startup"
+	printf "\tremove <name>"
+	printf "\t\tremove scheduled job with name <name>"
+	printf "\trun"
+	printf "\t\texecute all scripts and applications (to be used by service only)"
 }
 
 main() {
@@ -17,25 +17,27 @@ main() {
 		usage
 		exit 1
 	fi
-	command=$1
+	command="$1"
 	shift
 
+	s=0
 	case $command in
 		add)
-			add $@
+			add $* || s=$?
 			;;
 		run)
-			run $@
+			run $* || s=$?
 			;;
 		remove)
-			remove $@
+			remove $* || s=$?
 			;;
 		*)
 			echo "Invalid command \"$command\"!"
 			usage
-			exit 1
+			s=1
 			;;
 	esac
+	exit $s
 }
 
 add() {
@@ -44,7 +46,7 @@ add() {
 	exec="$2"
 
 	shift 2
-	args="$@"
+	args="$*"
 
 	# check if name already exists
 	if [ -e "/etc/runonce.d/$name.sh" ]; then
@@ -53,7 +55,7 @@ add() {
 	fi
 
 	# create script
-	echo "#!/bin/sh\n\n$exec $args" > "/etc/runonce.d/$name.sh"
+	printf "#!/bin/sh\n%s %s\nexit \$?" $exec "$args" > "/etc/runonce.d/$name.sh"
 	chmod +x "/etc/runonce.d/$name.sh"
 
 	echo "Added job with name=\"$name\"!"
@@ -61,7 +63,11 @@ add() {
 }
 
 remove() {
-	# TODO: error-checking
+	if [ $# != 1 ]; then
+		echo "$0: invalid number of arguments!"
+		usage
+		return 1
+	fi
 	name="$1"
 
 	if [ ! -e "/etc/runonce.d/$name.sh" ]; then
@@ -76,20 +82,40 @@ remove() {
 }
 
 run() {
-	# go through all scripts
+	if [ $# != 0 ]; then
+		echo "Encountered illegal arguments: $*"
+		return 1
+	fi
+
+	# collect all scripts
+	scripts=
+	i=0
 	for script in /etc/runonce.d/*.sh; do
+		test ! -e "$script" && continue
+		((i=i+1))
+		scripts[$i]="$script"
+	done
+	count=$i
+
+	# run all scripts
+	for i in $(seq 1 $count); do
+		script="${scripts[$i]}"
+
+		# execute it
+		echo $script
 		s=0
 		$SHELL "$script" || s=$?
 		# TODO: send output to logfile?
 		if [ $s = 0 ]; then
 			# all fine, delete script
-			rm -f $script
+			rm -f "$script"
+			echo "$(basename \"$script\") succeeded!"
 		else
 			# script failed, keep it in case it may succeed later, or for debugging
-			echo "`basename $script` failed with $s!"
+			echo "$(basename \"$script\") failed with $s!"
 		fi
 	done
 	return 0
 }
 
-main $@
+main $*
