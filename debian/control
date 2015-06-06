@@ -3,7 +3,7 @@ Section: unknown
 Priority: optional
 Maintainer: Josua Mayer <privacy@not.given>
 Build-Depends: debhelper (>= 9), dh-exec, dh-systemd
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Homepage: https://github.com/Artox/system-startup-runonce
 
 Package: runonce
