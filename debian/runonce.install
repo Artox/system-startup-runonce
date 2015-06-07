@@ -1,3 +1,4 @@
 #! /usr/bin/dh-exec
 
 runonce-helper.sh => /usr/sbin/runonce-helper
+motd.profile => /etc/profile.d/runonce.sh
