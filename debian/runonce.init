@@ -2,7 +2,9 @@
 ### BEGIN INIT INFO
 # Provides:          runonce
 # Required-Start:    $local_fs
+# Required-Stop:     
 # Default-Start:     2 3 4 5
+# Default-Stop:      
 # Short-Description: Execute Run-Once Apps
 # Description:       Run run-once applications or scripts during boot.
 ### END INIT INFO
