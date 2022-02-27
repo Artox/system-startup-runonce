@@ -1,13 +1,15 @@
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          runonce
-# Required-Start:    $local_fs
-# Required-Stop:     
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      
 # Short-Description: Execute Run-Once Apps
 # Description:       Run run-once applications or scripts during boot.
 ### END INIT INFO
+
+. /lib/lsb/init-functions
 
 if [ ! -x /usr/sbin/runonce-helper ]; then
 	exit 5
